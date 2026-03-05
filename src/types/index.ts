@@ -13,7 +13,7 @@ export interface HardwareItem {
 	brand: string;
 	category: Category;
 	price: number;
-	specs: string[]; // Ej: ["6 Cores", "3.9 GHz", "AM4"]
+	specs: string[];
 	inStock: boolean;
 }
 

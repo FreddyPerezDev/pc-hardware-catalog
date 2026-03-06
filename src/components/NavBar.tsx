@@ -9,6 +9,13 @@ interface SearchInputProps {
 }
 
 function SearchInput({ id, value, onChange }: SearchInputProps) {
+	const [localValue, setLocalValue] = useState(value);
+
+	useEffect(() => {
+		const timer = setTimeout(() => onChange(localValue), 300);
+		return () => clearTimeout(timer);
+	}, [localValue, onChange]);
+
 	return (
 		<div className="relative">
 			<svg
@@ -33,8 +40,8 @@ function SearchInput({ id, value, onChange }: SearchInputProps) {
 				name="search"
 				id={id}
 				placeholder="Buscar producto..."
-				value={value}
-				onChange={(e) => onChange(e.target.value)}
+				value={localValue}
+				onChange={(e) => setLocalValue(e.target.value)}
 				className="w-full bg-slate-700 text-slate-50 placeholder:text-slate-400 rounded-lg pl-9 pr-4 py-2 text-sm border border-slate-600 focus:outline-none focus:border-sky-500 transition-colors"
 			/>
 		</div>
@@ -45,21 +52,17 @@ interface NavBarProps {
 	search: string;
 	onSearchChange: (value: string) => void;
 	onLogoClick: () => void;
+	searchResetKey: number;
 }
 
-export function NavBar({ search, onSearchChange, onLogoClick }: NavBarProps) {
+export function NavBar({
+	search,
+	onSearchChange,
+	onLogoClick,
+	searchResetKey,
+}: NavBarProps) {
 	const { cartCount, openCart } = useCartContext();
 	const { favoritesCount } = useFavoritesContext();
-	const [localSearch, setLocalSearch] = useState(search);
-
-	useEffect(() => {
-		setLocalSearch(search);
-	}, [search]);
-
-	useEffect(() => {
-		const timer = setTimeout(() => onSearchChange(localSearch), 300);
-		return () => clearTimeout(timer);
-	}, [localSearch, onSearchChange]);
 
 	return (
 		<header className="bg-slate-800 border-b border-slate-700 sticky top-0 z-50">
@@ -95,9 +98,10 @@ export function NavBar({ search, onSearchChange, onLogoClick }: NavBarProps) {
 				<div className="hidden md:flex flex-1 justify-center px-6">
 					<div className="w-full max-w-md">
 						<SearchInput
+							key={`desktop-${searchResetKey}`}
 							id="search-desktop"
-							value={localSearch}
-							onChange={setLocalSearch}
+							value={search}
+							onChange={onSearchChange}
 						/>
 					</div>
 				</div>
@@ -174,9 +178,10 @@ export function NavBar({ search, onSearchChange, onLogoClick }: NavBarProps) {
 
 			<div className="md:hidden px-4 pb-3">
 				<SearchInput
+					key={`mobile-${searchResetKey}`}
 					id="search-mobile"
-					value={localSearch}
-					onChange={setLocalSearch}
+					value={search}
+					onChange={onSearchChange}
 				/>
 			</div>
 		</header>

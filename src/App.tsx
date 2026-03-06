@@ -1,4 +1,4 @@
-import { useLayoutEffect, useState } from "react";
+import { useCallback, useLayoutEffect, useState } from "react";
 import { CartPanel } from "./components/CartPanel";
 import { FiltersSidebar } from "./components/FiltersSidebar";
 import { HardwareCard } from "./components/HardwareCard";
@@ -26,6 +26,12 @@ export default function App() {
 	} = useFilters();
 
 	const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+	const [searchKey, setSearchKey] = useState(0);
+
+	const handleClearFilters = useCallback(() => {
+		clearFilters();
+		setSearchKey((k) => k + 1);
+	}, [clearFilters]);
 
 	// biome-ignore lint/correctness/useExhaustiveDependencies: currentPage triggers scroll, not used in body
 	useLayoutEffect(() => {
@@ -38,7 +44,8 @@ export default function App() {
 			<NavBar
 				search={filters.search}
 				onSearchChange={setSearch}
-				onLogoClick={clearFilters}
+				onLogoClick={handleClearFilters}
+				searchResetKey={searchKey}
 			/>
 			<div className="flex">
 				<FiltersSidebar
@@ -46,7 +53,7 @@ export default function App() {
 					onToggleCategory={toggleCategory}
 					onMaxPriceChange={setMaxPrice}
 					onToggleBrand={toggleBrand}
-					onClearFilters={clearFilters}
+					onClearFilters={handleClearFilters}
 					isOpen={isSidebarOpen}
 					onClose={() => setIsSidebarOpen(false)}
 				/>
@@ -148,7 +155,7 @@ export default function App() {
 									</p>
 									<button
 										type="button"
-										onClick={clearFilters}
+										onClick={handleClearFilters}
 										className="px-4 py-2 rounded-lg bg-sky-500 hover:bg-sky-400 text-white text-sm font-medium transition-colors"
 									>
 										Limpiar filtros

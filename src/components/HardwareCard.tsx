@@ -1,12 +1,19 @@
+import { memo } from "react";
+import { useCartContext } from "../contexts/CartContext";
+import { useFavoritesContext } from "../contexts/FavoritesContext";
 import type { HardwareItem } from "../types";
 
 interface HardwareCardProps {
 	hardwareItem: HardwareItem;
-	onAddCart: (id: string) => void;
 }
 
-export function HardwareCard({ hardwareItem, onAddCart }: HardwareCardProps) {
+export const HardwareCard = memo(function HardwareCard({
+	hardwareItem,
+}: HardwareCardProps) {
+	const { addToCart } = useCartContext();
+	const { isFavorite, toggleFavorite } = useFavoritesContext();
 	const { id, name, brand, category, price, specs, inStock } = hardwareItem;
+	const favorite = isFavorite(id);
 
 	return (
 		<article className="bg-slate-800 rounded-xl overflow-hidden border border-slate-700 hover:border-sky-500/50 transition-colors flex flex-col">
@@ -14,7 +21,7 @@ export function HardwareCard({ hardwareItem, onAddCart }: HardwareCardProps) {
 				{!inStock && (
 					<div className="absolute inset-0 bg-slate-900/70 flex items-center justify-center z-10">
 						<span className="text-slate-300 text-xs font-bold tracking-widest uppercase border border-slate-500 px-3 py-1 rounded">
-							Out of Stock
+							Agotado
 						</span>
 					</div>
 				)}
@@ -26,14 +33,17 @@ export function HardwareCard({ hardwareItem, onAddCart }: HardwareCardProps) {
 				</span>
 				<button
 					type="button"
-					aria-label="Agregar a favoritos"
-					className="absolute top-3 right-3 w-8 h-8 rounded-full bg-slate-800/80 backdrop-blur-sm flex items-center justify-center text-slate-400 hover:text-rose-400 transition-colors z-20"
+					onClick={() => toggleFavorite(id)}
+					aria-label={favorite ? "Quitar de favoritos" : "Agregar a favoritos"}
+					className={`absolute top-3 right-3 w-8 h-8 rounded-full bg-slate-800/80 backdrop-blur-sm flex items-center justify-center transition-colors z-20 ${
+						favorite ? "text-rose-400" : "text-slate-400 hover:text-rose-400"
+					}`}
 				>
 					<svg
 						xmlns="http://www.w3.org/2000/svg"
 						width="15"
 						height="15"
-						fill="none"
+						fill={favorite ? "currentColor" : "none"}
 						stroke="currentColor"
 						strokeLinecap="round"
 						strokeLinejoin="round"
@@ -75,7 +85,7 @@ export function HardwareCard({ hardwareItem, onAddCart }: HardwareCardProps) {
 									className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0"
 									aria-hidden="true"
 								/>
-								In Stock
+								Disponible
 							</p>
 						) : (
 							<p className="flex items-center gap-1.5 text-xs text-slate-400 mb-1.5">
@@ -83,7 +93,7 @@ export function HardwareCard({ hardwareItem, onAddCart }: HardwareCardProps) {
 									className="w-1.5 h-1.5 rounded-full bg-slate-400 shrink-0"
 									aria-hidden="true"
 								/>
-								Out of Stock
+								Agotado
 							</p>
 						)}
 						<p className="text-xl font-bold text-slate-50">${price}</p>
@@ -91,7 +101,7 @@ export function HardwareCard({ hardwareItem, onAddCart }: HardwareCardProps) {
 
 					<button
 						type="button"
-						onClick={() => onAddCart(id)}
+						onClick={() => addToCart(id)}
 						disabled={!inStock}
 						aria-label={`Agregar ${name} al carrito`}
 						className="w-10 h-10 rounded-lg bg-sky-500 hover:bg-sky-400 disabled:bg-slate-600 disabled:cursor-not-allowed flex items-center justify-center text-white transition-colors shrink-0"
@@ -117,4 +127,4 @@ export function HardwareCard({ hardwareItem, onAddCart }: HardwareCardProps) {
 			</div>
 		</article>
 	);
-}
+});

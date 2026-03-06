@@ -7,10 +7,26 @@ export type Category =
 	| "Cooler"
 	| "PSU";
 
+export type Brand =
+	| "AMD"
+	| "NVIDIA"
+	| "Intel"
+	| "Asus"
+	| "MSI"
+	| "Corsair"
+	| "G.Skill"
+	| "Kllisre"
+	| "Crucial"
+	| "Samsung"
+	| "DeepCool"
+	| "Noctua";
+
+export type SortBy = "featured" | "price-asc" | "price-desc" | "newest";
+
 export interface HardwareItem {
 	id: string;
 	name: string;
-	brand: string;
+	brand: Brand;
 	category: Category;
 	price: number;
 	specs: string[];
@@ -19,8 +35,8 @@ export interface HardwareItem {
 
 export interface FilterState {
 	search: string;
-	category: Category | "ALL";
-	minPrice: number;
+	categories: Category[];
 	maxPrice: number;
-	brand: string;
+	brands: Brand[];
+	sortBy: SortBy;
 }
